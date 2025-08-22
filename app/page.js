@@ -34,6 +34,43 @@ export default function Home() {
     setLoading(false);
   };
 
+  const handleStreamChat = async () => {
+    setStreaming(true)
+    setStreamResponse("")
+
+    try {
+      const res = await fetch("api/chat-stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const data = JSON.parse(line.slice(6));
+            setStreamResponse((prev) => prev + data.content);
+          }
+        }
+      }
+    } catch (error) {
+      setStreamResponse("Error: " + error.message);
+    }
+
+    setLoading(false);
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-indigo-500 via-purple-500 to-purple-600">
       <div className="text-center py-8 px-4 text-white">
@@ -70,20 +107,36 @@ export default function Home() {
             className="w-full p-4 border-2 border-gray-200 rounded-lg text-base leading-relaxed resize-y font-inherit transition-colors duration-200 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 disabled:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
             disabled={loading}
           />
-          <button
-            onClick={handleChat}
-            disabled={loading || !message.trim()}
-            className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-none py-3.5 px-8 rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 flex items-center justify-center gap-2 self-end min-w-[140px] hover:enabled:-translate-y-0.5 hover:enabled:shadow-lg hover:enabled:shadow-indigo-400/40 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            {loading ? (
-              <>
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                Sending...
-              </>
-            ) : (
-              "Send Message"
-            )}
-          </button>
+          <div className="flex flex-row items-center justify-around">
+            <button
+              onClick={handleChat}
+              disabled={loading || !message.trim()}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-none py-3.5 px-8 rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 flex items-center justify-center gap-2 self-end min-w-[140px] hover:enabled:-translate-y-0.5 hover:enabled:shadow-lg hover:enabled:shadow-indigo-400/40 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {loading ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  Sending...
+                </>
+              ) : (
+                "Send Message"
+              )}
+            </button>
+            <button
+              onClick={handleStreamChat}
+              disabled={loading || !message.trim()}
+              className="bg-gradient-to-r from-yellow-500 to-green-600 text-white border-none py-3.5 px-8 rounded-lg text-base font-semibold cursor-pointer transition-all duration-200 flex items-center justify-center gap-2 self-end min-w-[140px] hover:enabled:-translate-y-0.5 hover:enabled:shadow-lg hover:enabled:shadow-indigo-400/40 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              {loading ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  Sending...
+                </>
+              ) : (
+                "Stream Message"
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
