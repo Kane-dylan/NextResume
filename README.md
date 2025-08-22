@@ -1,5 +1,3 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
 ## Getting Started
 
 First, run the development server:
@@ -12,6 +10,18 @@ yarn dev
 pnpm dev
 # or
 bun dev
+```
+
+### Integration Flow
+
+```mermaid
+graph TD
+    A[Frontend React App] --> B[Stream Chat React Components]
+    B --> C[Stream Chat API]
+    C --> D[Backend Node.js Server]
+    D --> E[OpenAI API]
+    D --> F[Tavily Web Search]
+    D --> G[AI Agent Management]
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
