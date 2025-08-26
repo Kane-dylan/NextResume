@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = 'edge'; // optional, if using streaming or edge functions
+export const runtime = 'edge'; 
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.COHERE_API_KEY;
@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "command-r-plus", // Updated to a stable model
-        message: prompt, // Cohere uses 'message' not 'messages'
+        model: "command-r-plus",
+        message: prompt,
       }),
     });
 
@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await response.json();
-    return NextResponse.json({ content: result.text }); // Cohere returns 'text' not 'choices'
+    return NextResponse.json({ content: result.text }); 
   } catch (err) {
     console.error("Fetch error:", err);
     return NextResponse.json(
