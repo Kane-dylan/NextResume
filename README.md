@@ -1,4 +1,4 @@
-<!-- ## Getting Started
+## Getting Started
 
 First, run the development server:
 
@@ -22,4 +22,4 @@ graph TD
     D --> E[OpenAI API]
     D --> F[Tavily Web Search]
     D --> G[AI Agent Management]
-``` -->
+```
